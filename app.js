@@ -1,57 +1,68 @@
 let words = JSON.parse(localStorage.getItem('arabic_vocab')) || [];
-let currentTheme = 'light';
 
-// 1. Rejimni boshqarish
-function setTheme(theme) {
-    document.body.className = theme + '-mode';
+// Sidebar boshqaruvi
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
 }
 
-// 2. So'z saqlash (Xato balli bilan)
+// Rejimni o'zgartirish
+function setTheme(theme) {
+    document.body.className = theme + '-mode min-h-screen';
+    localStorage.setItem('app_theme', theme);
+}
+
+// Shrift o'lchamini yangilash
+function updateFontSize(lang, size) {
+    if (lang === 'ar') {
+        document.querySelectorAll('.arabic-text').forEach(el => el.style.fontSize = size + 'px');
+        document.getElementById('ar-size-val').innerText = size;
+    } else {
+        document.getElementById('options').style.fontSize = size + 'px';
+        document.getElementById('uz-size-val').innerText = size;
+    }
+    localStorage.setItem(`font_size_${lang}`, size);
+}
+
+// So'zni saqlash
 function saveWord() {
     const ar = document.getElementById('word-ar').value.trim();
     const uz = document.getElementById('word-uz').value.trim();
 
     if (ar && uz) {
-        words.push({
-            ar, uz, 
-            score: 0, // Har bir to'g'ri javob +1
-            mistakes: 0, // Har bir xato +1
-            lastTested: Date.now()
-        });
+        words.push({ ar, uz, mistakes: 0, score: 0 });
         localStorage.setItem('arabic_vocab', JSON.stringify(words));
-        alert("Saqlandi!");
         document.getElementById('word-ar').value = '';
         document.getElementById('word-uz').value = '';
-        updateUI();
-        generateNextTask();
+        alert("Muvaffaqiyatli qo'shildi!");
+        generateTask();
     }
 }
 
-// 3. Aqlli test generatsiyasi
-function generateNextTask() {
-    if (words.length < 2) return;
+// Test yaratish (Aqlli algoritm)
+function generateTask() {
+    if (words.length < 1) return;
 
-    // Eng ko'p xato qilingan so'zlarni saralab olish (Priority Queue simulyatsiyasi)
-    let priorityWords = [...words].sort((a, b) => b.mistakes - a.mistakes);
-    
-    // 70% holatda qiynalgan so'zini, 30% holatda tasodifiy so'zni so'raymiz
-    let question = Math.random() < 0.7 ? priorityWords[0] : words[Math.floor(Math.random() * words.length)];
+    // Xatosi ko'p so'zlarga ustunlik berish
+    const sorted = [...words].sort((a, b) => b.mistakes - a.mistakes);
+    const question = Math.random() < 0.7 ? sorted[0] : words[Math.floor(Math.random() * words.length)];
 
     document.getElementById('q-text').innerText = question.ar;
     const optionsDiv = document.getElementById('options');
     optionsDiv.innerHTML = '';
 
     let choices = [question.uz];
-    while(choices.length < 3) {
-        let randomUz = words[Math.floor(Math.random() * words.length)].uz;
-        if(!choices.includes(randomUz)) choices.push(randomUz);
+    while(choices.length < 3 && words.length > 2) {
+        let rand = words[Math.floor(Math.random() * words.length)].uz;
+        if(!choices.includes(rand)) choices.push(rand);
     }
     choices.sort(() => Math.random() - 0.5);
 
     choices.forEach(choice => {
         const btn = document.createElement('button');
         btn.innerText = choice;
-        btn.className = "p-4 bg-white border-2 border-gray-100 rounded-2xl hover:border-blue-400 hover:bg-blue-50 transition text-black font-semibold";
+        btn.className = "w-full p-4 border-2 rounded-2xl font-semibold hover:border-blue-500 transition active:scale-95";
+        btn.style.fontSize = document.getElementById('uz-size-val').innerText + 'px';
         btn.onclick = () => checkAnswer(choice, question);
         optionsDiv.appendChild(btn);
     });
@@ -60,44 +71,24 @@ function generateNextTask() {
 function checkAnswer(selected, question) {
     const fb = document.getElementById('feedback');
     if (selected === question.uz) {
-        fb.innerText = "Barakalla! ✅";
-        fb.className = "mt-4 text-center font-bold text-green-500";
+        fb.innerText = "To'g'ri! ✅";
+        fb.style.color = "#10b981";
         question.score++;
     } else {
-        fb.innerText = "Xato! To'g'risi: " + question.uz;
-        fb.className = "mt-4 text-center font-bold text-red-500";
-        question.mistakes++; // Xato ballini oshiramiz
+        fb.innerText = "Xato! ❌";
+        fb.style.color = "#ef4444";
+        question.mistakes++;
     }
     localStorage.setItem('arabic_vocab', JSON.stringify(words));
-    updateUI();
-    setTimeout(generateNextTask, 1500);
+    setTimeout(() => {
+        fb.innerText = "";
+        generateTask();
+    }, 1200);
 }
 
-// 4. Haftalik Imtihon Logikasi
-function checkExamDay() {
-    const lastExam = localStorage.getItem('last_exam_date');
-    const now = new Date();
-    const examBtn = document.getElementById('exam-btn');
-
-    // Agar 7 kun o'tgan bo'lsa yoki dushanba bo'lsa (misol uchun)
-    if (!lastExam || (now - new Date(lastExam)) > 7 * 24 * 60 * 60 * 1000) {
-        examBtn.classList.remove('hidden');
-    }
-}
-
-function startWeeklyExam() {
-    alert("Haftalik imtihon boshlandi! Faqat eng ko'p xato qilgan so'zlaringiz so'raladi.");
-    // Imtihon algoritmi: Faqat xatosi ko'p so'zlardan 20 talik test
-    localStorage.setItem('last_exam_date', new Date().toISOString());
-    document.getElementById('exam-btn').classList.add('hidden');
-}
-
-function updateUI() {
-    document.getElementById('total-count').innerText = words.length;
-    let totalMistakes = words.reduce((acc, w) => acc + w.mistakes, 0);
-    document.getElementById('error-rate').innerText = totalMistakes;
-    checkExamDay();
-}
-
-updateUI();
-generateNextTask();
+// Dastlabki yuklash
+window.onload = () => {
+    const savedTheme = localStorage.getItem('app_theme') || 'light';
+    setTheme(savedTheme);
+    generateTask();
+};
