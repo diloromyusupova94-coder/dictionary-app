@@ -3,116 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mening Lug'atim | Dilorom Yusupova</title>
+    <title>Mening Lug'atim</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dark-emerald: #064e3b;
-            --gold: #d4af37;
-            --cream: #f8fafc;
+            --primary: #10b981; /* Zumrad yashil */
+            --accent: #f59e0b;  /* Oltin/Sariq */
+            --bg: #f8fafc;
         }
-        body { font-family: 'Montserrat', sans-serif; transition: 0.3s; background: #f1f5f9; }
-        .arabic-text { font-family: 'Amiri', serif; direction: rtl; }
-
-        /*Sidebar - To'q rangli, kontrastli*/
-        .sidebar { background: #064e3b; color: white; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .sidebar.active { transform: translateX(0); }
-
-        /*Kartochkalar - Aniq chegaralar*/
-        .glass-card { 
-            background: white; 
-            border: 3px solid #064e3b; 
-            border-radius: 30px; 
-            box-shadow: 10px 10px 0px #064e3b;
-        }
-
-        /*Tugmalar - Yuqori kontrast*/
-        .btn-main {
-            background: #d4af37;
-            color: #064e3b;
-            font-weight: 900;
-            border: 3px solid #064e3b;
-            box-shadow: 4px 4px 0px #064e3b;
-            transition: 0.2s;
-        }
-        .btn-main:active { transform: translate(4px, 4px); box-shadow: none; }
-
-        /*Inputlar - Aniq va to'q yozuvli*/
-        input {
-            background: #f8fafc !important;
-            border: 3px solid #064e3b !important;
-            color: #064e3b !important;
-            border-radius: 15px !important;
-            padding: 15px !important;
-            font-weight: 700 !important;
-        }
-        
-        .option-btn {
-            background: white;
-            border: 3px solid #cbd5e1;
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg);
             color: #1e293b;
-            font-weight: 700;
-            padding: 15px;
-            border-radius: 15px;
-            transition: 0.2s;
+            transition: all 0.4s ease;
         }
-        .option-btn:hover { border-color: #064e3b; background: #ecfdf5; }
+        .arabic-font { font-family: 'Amiri', serif; direction: rtl; }
+        
+        /* Modern Card */
+        .m-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Sidebar Modern */
+        .m-sidebar {
+            background: #ffffff;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.05);
+        }
+        .m-sidebar.active { transform: translateX(0); }
+
+        /* Input Styling */
+        .m-input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+        .m-input:focus {
+            border-color: var(--primary);
+            background: white;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Premium Button */
+        .m-btn {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+            transition: all 0.2s;
+        }
+        .m-btn:active { transform: scale(0.98); }
+
+        /* Modes */
+        body.dark-mode { background: #0f172a; color: #f8fafc; }
+        body.dark-mode .m-card, body.dark-mode .m-sidebar { background: #1e293b; border-color: #334155; }
+        body.dark-mode .m-input { background: #0f172a; border-color: #334155; color: white; }
+        
+        body.book-mode { background: #fdf6e3; color: #433422; }
+        body.book-mode .m-card, body.book-mode .m-sidebar { background: #fefcf5; border-color: #e5d5b7; }
     </style>
 </head>
-<body class="p-4">
+<body class="min-h-screen">
 
-    <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-72 z-50 p-8 shadow-2xl">
+    <div id="sidebar" class="m-sidebar fixed top-0 left-0 h-full w-80 z-50 p-8">
         <div class="flex justify-between items-center mb-10">
-            <h2 class="text-xl font-black border-b-4 border-gold pb-2">SOZLAMALAR</h2>
-            <button onclick="toggleSidebar()" class="text-4xl">&times;</button>
+            <h2 class="text-xl font-800">Sozlamalar</h2>
+            <button onclick="toggleSidebar()" class="text-gray-400">&times;</button>
         </div>
 
-        <div class="space-y-8">
+        <div class="space-y-6">
             <div>
-                <p class="text-xs font-bold text-emerald-200 mb-3 uppercase tracking-widest">Rejimlar</p>
-                <div class="flex flex-col gap-2">
-                    <button onclick="setTheme('light')" class="p-3 bg-white text-emerald-900 rounded-xl font-black text-xs">KUN REJIMI</button>
-                    <button onclick="setTheme('dark')" class="p-3 bg-slate-900 text-white rounded-xl font-black text-xs border border-emerald-500">TUN REJIMI</button>
-                    <button onclick="setTheme('book')" class="p-3 bg-[#f4ecd8] text-amber-900 rounded-xl font-black text-xs">KITOB REJIMI</button>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Rejimni tanlang</p>
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="setTheme('light')" class="p-4 rounded-2xl border-2 border-gray-100 flex items-center gap-3 font-semibold"><span class="text-xl">☀️</span> Kun</button>
+                    <button onclick="setTheme('dark')" class="p-4 rounded-2xl border-2 border-gray-100 flex items-center gap-3 font-semibold"><span class="text-xl">🌙</span> Tun</button>
+                    <button onclick="setTheme('book')" class="p-4 rounded-2xl border-2 border-gray-100 flex items-center gap-3 font-semibold"><span class="text-xl">📖</span> Kitob</button>
                 </div>
             </div>
 
-            <div>
-                <p class="text-xs font-bold text-emerald-200 mb-3 uppercase tracking-widest">Harf o'lchami</p>
-                <input type="range" min="20" max="80" value="45" oninput="updateFontSize(this.value)" class="w-full accent-gold">
-            </div>
-
-            <div class="pt-10 border-t border-emerald-700">
-                <p class="text-[10px] font-bold text-gold uppercase mb-2">Loyiha Muallifi</p>
-                <p class="text-lg font-black leading-none">Dilorom Yusupova</p>
-                <p class="text-[10px] opacity-70 mt-1">lingvist-tadqiqotchi-dasturchi</p>
+            <div class="pt-10 border-t">
+                <p class="text-[10px] font-bold text-gray-400 uppercase">Loyiha muallifi</p>
+                <p class="text-lg font-bold mt-1">Dilorom Yusupova</p>
+                <p class="text-xs text-emerald-500 font-semibold">lingvist-tadqiqotchi-dasturchi</p>
             </div>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto">
-        <header class="flex justify-between items-center my-6">
-            <button onclick="toggleSidebar()" class="w-14 h-14 bg-emerald-900 text-gold rounded-2xl flex items-center justify-center border-4 border-emerald-900 shadow-lg">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    <div class="max-w-md mx-auto p-6">
+        <header class="flex justify-between items-center mb-10">
+            <button onclick="toggleSidebar()" class="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-gray-100">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
             </button>
-            <h1 class="text-xl font-black text-emerald-900 uppercase tracking-tighter text-right leading-none">Mening<br><span class="text-gold text-2xl">Lug'atim</span></h1>
+            <div class="text-right">
+                <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Arab tili</p>
+                <h1 class="text-xl font-800">MENING LUG'ATIM</h1>
+            </div>
         </header>
 
-        <div class="glass-card p-6 mb-8">
+        <div class="m-card p-6 mb-8">
             <div class="space-y-4">
-                <input id="word-ar" type="text" placeholder="Arabcha so'z" class="arabic-text text-4xl text-center w-full">
-                <input id="word-uz" type="text" placeholder="O'zbekcha tarjimasi" class="text-lg text-center w-full">
-                <button onclick="saveWord()" class="btn-main w-full py-4 text-xl">SO'ZNI QO'SHISH</button>
+                <input id="word-ar" type="text" placeholder="Arabcha so'z" class="arabic-font m-input text-4xl text-center">
+                <input id="word-uz" type="text" placeholder="Tarjimasi" class="m-input text-lg text-center font-semibold">
+                <button onclick="saveWord()" class="m-btn w-full">So'zni qo'shish</button>
             </div>
         </div>
 
-        <div class="glass-card p-6 border-t-[12px] border-emerald-900">
-            <div class="text-center py-10 bg-emerald-50 rounded-2xl mb-6 border-2 border-emerald-200">
-                <p id="q-text" class="arabic-text text-emerald-900 leading-none" style="font-size: 45px;">Hali so'z yo'q</p>
+        <div class="m-card p-6">
+            <div id="game-zone">
+                <div class="text-center py-12 bg-gray-50 rounded-3xl mb-8 border border-gray-100">
+                    <p id="q-text" class="arabic-font text-emerald-600 leading-tight" style="font-size: 48px;">...</p>
+                </div>
+                <div id="options" class="grid gap-3"></div>
             </div>
-            <div id="options" class="grid gap-3"></div>
-            <p id="feedback" class="mt-6 text-center font-black text-2xl italic h-8"></p>
+            <p id="feedback" class="mt-6 text-center font-bold text-lg h-6"></p>
         </div>
     </div>
 
