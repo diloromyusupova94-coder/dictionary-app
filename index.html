@@ -1,105 +1,196 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arab tili - Lug'at</title>
+    <title>Lisun Al-Arab | لِسانُ العَرَب</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; transition: 0.3s; overflow-x: hidden; }
+        :root {
+            --primary: #c9a063; /* Premium oltin */
+            --bg-light: #f4f6f8;
+            --text-light: #1e293b;
+            --card-light: #ffffff;
+            --shadow-light: rgba(0, 0, 0, 0.05);
+
+            --bg-dark: #0a0e17;
+            --text-dark: #f1f5f9;
+            --card-dark: #141b2d;
+            --shadow-dark: rgba(0, 0, 0, 0.3);
+
+            --bg-book: #fdfaf1;
+            --text-book: #5b4636;
+            --card-book: #fbf6e9;
+            --shadow-book: rgba(91, 70, 54, 0.1);
+        }
+
+        body { font-family: 'Poppins', sans-serif; transition: background 0.4s, color 0.4s; overflow-x: hidden; }
         .arabic-text { font-family: 'Amiri', serif; direction: rtl; }
         
         /* Rejimlar */
-        .light-mode { background: #f1f5f9; color: #1e293b; }
-        .dark-mode { background: #0f172a; color: #f1f5f9; }
-        .book-mode { background: #f4ecd8; color: #5b4636; }
+        body.light-mode { background: var(--bg-light); color: var(--text-light); }
+        body.dark-mode { background: var(--bg-dark); color: var(--text-dark); }
+        body.book-mode { background: var(--bg-book); color: var(--text-book); }
 
-        .dark-mode .card, .dark-mode .sidebar { background: #1e293b; border-color: #334155; }
-        .book-mode .card, .book-mode .sidebar { background: #fdfaf1; border-color: #e2d1b3; }
+        /* Card va Neumorphism effekti */
+        .glass-card { 
+            background: var(--card-light);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.3s;
+        }
+        body.dark-mode .glass-card { background: var(--card-dark); box-shadow: 0 10px 30px var(--shadow-dark); }
+        body.book-mode .glass-card { background: var(--card-book); box-shadow: 0 10px 30px var(--shadow-book); }
 
-        .sidebar { transition: transform 0.3s ease; transform: translateX(-100%); }
+        /* Premium Tugma */
+        .gold-btn {
+            background: linear-gradient(135deg, #e4c593 0%, #c9a063 100%);
+            color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(201, 160, 99, 0.3);
+            transition: 0.3s ease;
+        }
+        .gold-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201, 160, 99, 0.4); }
+
+        /* Sidebar G'arbiy ornament bilan */
+        .sidebar { 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            transform: translateX(-100%); 
+            background: var(--card-light);
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNjOWEwNjMiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4=');
+        }
+        body.dark-mode .sidebar { background: var(--card-dark); }
+        body.book-mode .sidebar { background: var(--card-book); }
         .sidebar.active { transform: translateX(0); }
-        .overlay { display: none; background: rgba(0,0,0,0.5); }
-        .overlay.active { display: block; }
+        
+        /* Inputlar */
+        input { background: transparent !important; border-bottom: 2px solid #e2e8f0; border-radius: 0; transition: 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; }
+        body.dark-mode input { border-color: #334155; }
+        
+        /* Oltin belgi (Islamic pattern) */
+        .pattern-overlay {
+            position: absolute; top: -20px; right: -20px;
+            font-size: 100px; color: var(--primary); opacity: 0.1;
+            font-family: 'Amiri', serif;
+        }
     </style>
 </head>
 <body class="light-mode min-h-screen">
 
-    <div id="overlay" class="overlay fixed inset-0 z-40" onclick="toggleSidebar()"></div>
+    <div id="overlay" class="overlay fixed inset-0 z-40 bg-black/50 hidden" onclick="toggleSidebar()"></div>
 
-    <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-80 z-50 p-6 shadow-2xl bg-white overflow-y-auto border-r">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-xl font-bold">Sozlamalar</h2>
-            <button onclick="toggleSidebar()" class="text-2xl">&times;</button>
+    <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-80 z-50 p-8 shadow-2xl border-r border-gray-100 dark:border-gray-800">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-2xl font-extrabold text-blue-950 dark:text-white">Sozlamalar</h2>
+            <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-full text-2xl">&times;</button>
         </div>
 
-        <div class="mb-8">
-            <p class="text-sm font-semibold mb-3 opacity-70 uppercase tracking-wider">Mavzu</p>
-            <div class="grid grid-cols-3 gap-2">
-                <button onclick="setTheme('light')" class="p-2 border rounded-xl text-xs bg-white text-black">Kun</button>
-                <button onclick="setTheme('dark')" class="p-2 border rounded-xl text-xs bg-gray-800 text-white">Tun</button>
-                <button onclick="setTheme('book')" class="p-2 border rounded-xl text-xs bg-[#e2d1b3] text-amber-900">Kitob</button>
+        <div class="mb-10">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Interfeys Mavzusi</p>
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="setTheme('light')" class="p-3 border rounded-xl text-xs bg-white text-black flex flex-col items-center gap-1 shadow-inner"><span class="text-xl">☀️</span>Kun</button>
+                <button onclick="setTheme('dark')" class="p-3 border rounded-xl text-xs bg-gray-900 text-white flex flex-col items-center gap-1"><span class="text-xl">🌙</span>Tun</button>
+                <button onclick="setTheme('book')" class="p-3 border rounded-xl text-xs bg-[#f4ecd8] text-amber-950 flex flex-col items-center gap-1"><span class="text-xl">📖</span>Kitob</button>
             </div>
         </div>
 
-        <div class="mb-8">
-            <p class="text-sm font-semibold mb-3 opacity-70 uppercase tracking-wider">Shrift o'lchami</p>
-            <div class="space-y-4">
+        <div class="mb-10">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Matn o'lchami</p>
+            <div class="space-y-5">
                 <div>
-                    <label class="text-xs">Arabcha: <span id="ar-size-val">32</span>px</label>
-                    <input type="range" min="20" max="60" value="32" oninput="updateFontSize('ar', this.value)" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between items-center mb-1"><label class="text-xs">Arabcha: (كِتاب)</label><span id="ar-size-val" class="text-xs text-primary font-bold">40px</span></div>
+                    <input type="range" min="30" max="80" value="40" oninput="updateFontSize('ar', this.value)" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#c9a063]">
                 </div>
                 <div>
-                    <label class="text-xs">O'zbekcha: <span id="uz-size-val">16</span>px</label>
-                    <input type="range" min="12" max="30" value="16" oninput="updateFontSize('uz', this.value)" class="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between items-center mb-1"><label class="text-xs">O'zbekcha:</label><span id="uz-size-val" class="text-xs text-primary font-bold">18px</span></div>
+                    <input type="range" min="14" max="28" value="18" oninput="updateFontSize('uz', this.value)" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#c9a063]">
                 </div>
             </div>
         </div>
 
-        <div class="mb-8 p-4 bg-blue-50 rounded-2xl dark:bg-slate-800">
-            <h3 class="font-bold mb-2">Loyiha haqida</h3>
-            <p class="text-xs leading-relaxed opacity-80">
-                Ushbu ilova arab tili lug'atini samarali yodlash uchun maxsus ishlab chiqilgan. 
-                <br><br>
-                <b>Qoidalar:</b>
-                1. Yangi so'zlarni o'zingiz kiriting.
-                2. Testlarda xato qilingan so'zlar avtomatik "takrorlash" navbatiga tushadi.
-                3. Har 7 kunda barcha yodlangan so'zlardan umumiy imtihon topshiriladi.
-            </p>
-        </div>
-
-        <div class="p-4 border-t">
-            <h3 class="font-bold mb-1">Loyiha muallifi:</h3>
-            <p class="text-sm text-blue-600 font-semibold">Dilorom Yusupova</p>
-            <p class="text-xs opacity-60">lingvist-tadqiqotchi-dasturchi</p>
-            <a href="mailto:diloromyusupova94@gmail.com" class="text-[10px] text-gray-500 underline">diloromyusupova94@gmail.com</a>
+        <div class="mt-auto pt-6 border-t border-gray-100 dark:border-gray-800">
+            <div class="glass-card p-5 relative overflow-hidden bg-gray-50 dark:bg-slate-800/50">
+                <div class="pattern-overlay">﷽</div>
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Loyiha Muallifi</h3>
+                <p class="text-lg font-bold text-gray-900 dark:text-white">Dilorom Yusupova</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">lingvist-tadqiqotchi-dasturchi</p>
+                <a href="mailto:diloromyusupova94@gmail.com" class="text-sm text-primary font-medium hover:underline flex items-center gap-1">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    E-mail jo'natish
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto p-4">
-        <div class="flex justify-between items-center mb-6">
-            <button onclick="toggleSidebar()" class="p-3 bg-white shadow-md rounded-2xl dark:bg-slate-800">
+    <div class="max-w-xl mx-auto p-6 md:p-10">
+        <div class="flex justify-between items-center mb-10 pb-4 border-b border-gray-100 dark:border-gray-800">
+            <button onclick="toggleSidebar()" class="w-12 h-12 flex items-center justify-center bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 hover:scale-105 transition">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
             </button>
-            <h1 class="text-xl font-bold">Mening Lug'atim</h1>
-            <div class="w-10"></div>
-        </div>
-
-        <div class="card p-6 rounded-3xl shadow-xl bg-white mb-6">
-            <input id="word-ar" type="text" placeholder="Arabcha so'z..." class="arabic-text w-full p-4 border-b text-3xl focus:outline-none text-center bg-transparent">
-            <input id="word-uz" type="text" placeholder="Tarjimasi..." class="w-full p-3 text-center focus:outline-none bg-transparent">
-            <button onclick="saveWord()" class="w-full mt-4 bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200">Qo'shish</button>
-        </div>
-
-        <div class="card p-6 rounded-3xl shadow-xl bg-white">
-            <div class="text-center py-10 mb-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl">
-                <p id="q-text" class="arabic-text leading-tight px-2" style="font-size: 32px;">Kutmoqdaman...</p>
+            <div class="text-center">
+                <h1 class="text-2xl font-extrabold text-gray-950 dark:text-white poppins-font">Lisun Al-Arab</h1>
+                <p class="arabic-text text-sm text-primary" style="font-size: 18px;">لِسانُ العَرَب</p>
             </div>
-            <div id="options" class="space-y-3"></div>
-            <p id="feedback" class="mt-4 text-center font-bold h-6"></p>
+            <div class="w-12"></div> </div>
+
+        <div class="glass-card p-8 mb-10 relative overflow-hidden">
+            <div class="pattern-overlay">ع</div>
+            <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-5 relative z-10">Yangi so'z bazasini shakllantirish</h2>
+            <div class="grid md:grid-cols-2 gap-6 relative z-10">
+                <input id="word-ar" type="text" placeholder="كِتَابٌ" class="arabic-text w-full p-4 text-4xl text-center focus:border-b-2">
+                <input id="word-uz" type="text" placeholder="Kitob" class="w-full p-4 text-xl text-center focus:border-b-2 poppins-font">
+            </div>
+            <button onclick="saveWord()" class="gold-btn w-full mt-8 py-5 text-lg font-bold poppins-font">Ro'yxatga qo'shish</button>
+        </div>
+
+        <div class="glass-card p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest">Aqliy mashq</h2>
+                <span class="text-xs bg-blue-50 dark:bg-slate-800 px-3 py-1 rounded-full text-blue-600">Premium Mode</span>
+            </div>
+            <div id="game-zone">
+                <div class="text-center py-16 mb-8 bg-gray-50 dark:bg-slate-900/50 rounded-3xl border border-gray-100 dark:border-gray-800">
+                    <p id="q-text" class="arabic-text leading-tight px-4" style="font-size: 40px; color: var(--primary);">لسان العرب...</p>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mt-3">Tarjimasini toping</p>
+                </div>
+                <div id="options" class="grid grid-cols-1 md:grid-cols-2 gap-4 poppins-font">
+                    </div>
+            </div>
+            <p id="feedback" class="mt-6 text-center font-bold h-6 text-lg"></p>
         </div>
     </div>
+
+    <div id="about-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden p-6" onclick="toggleAboutModal()">
+        <div class="glass-card w-full max-w-lg p-10 relative overflow-hidden" onclick="event.stopPropagation()">
+            <div class="pattern-overlay">؟</div>
+            <button onclick="toggleAboutModal()" class="absolute top-5 right-5 text-2xl">&times;</button>
+            <h3 class="text-2xl font-extrabold mb-6 text-primary poppins-font">Loyiha metodikasi</h3>
+            <div class="prose prose-sm leading-relaxed text-gray-700 dark:text-gray-300">
+                <p>Ushbu platforma <strong class="text-gray-900 dark:text-white">Dilorom Yusupova</strong> tomonidan arab tili lug'at boyligini o'zlashtirishni pedagogik nuqtai nazardan eng samarali usullar asosida ishlab chiqilgan.</p>
+                <ul class="list-disc pl-5 space-y-2 mt-4 text-xs">
+                    <li><strong class="text-primary">Ehtiyojiy Ta'lim:</strong> Talaba tayyor lug'atdan emas, o'z ehtiyojidan kelib chiqib so'z kiritadi.</li>
+                    <li><strong class="text-primary">Aqlli Takrorlash:</strong> Tizim ko'p xato qilinadigan so'zlarni 70% ko'proq chiqarib, zaif nuqtalarni mustahkamlaydi.</li>
+                    <li><strong class="text-primary">Tizimli Nazorat:</strong> Har 7 kunda umumiy o'tilgan so'zlar bo'yicha yakuniy imtihon o'tkaziladi.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Buni app.js ga ham qo'shishingiz mumkin, lekin hozircha tezkor yechim
+        function toggleAboutModal() {
+            document.getElementById('about-modal').classList.toggle('hidden');
+        }
+        // Sidebar'ga "Loyiha haqida" tugmasini qo'shish
+        const aboutBtn = document.createElement('button');
+        aboutBtn.innerText = "Loyiha metodikasi";
+        aboutBtn.className = "w-full text-left text-xs text-gray-500 hover:text-primary mb-2 poppins-font underline";
+        aboutBtn.onclick = toggleAboutModal;
+        document.getElementById('sidebar').querySelector('.mb-10 p-4').before(aboutBtn);
+    </script>
 
     <script src="app.js"></script>
 </body>
