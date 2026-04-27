@@ -7,105 +7,87 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --sky-light: #f0f9ff;
-            --blue-royal: #1d4ed8;
-            --blue-soft: #60a5fa;
-        }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--sky-light); 
-            color: #1e3a8a; 
-            transition: 0.3s;
-        }
-        /* Amiri o'rniga zamonaviy arabcha shrift */
-        .arabic-font { 
-            font-family: 'IBM Plex Sans Arabic', sans-serif; 
-            direction: rtl; 
-            line-height: 1.6;
-        }
+        :root { --bg: #f0f9ff; --text: #1e3a8a; --card: #ffffff; }
+        .dark-mode { --bg: #0f172a; --text: #f8fafc; --card: #1e293b; }
         
-        .sidebar, .right-panel {
-            background: white;
-            position: fixed;
-            top: 0;
-            height: 100%;
-            width: 280px;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 100;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
-        }
-        .sidebar { left: 0; transform: translateX(-100%); border-right: 1px solid #e2e8f0; }
-        .right-panel { right: 0; transform: translateX(100%); border-left: 1px solid #e2e8f0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
+        .arabic-font { font-family: 'IBM Plex Sans Arabic', sans-serif; direction: rtl; }
+        
+        .sidebar, .right-panel { background: var(--card); position: fixed; top: 0; height: 100%; width: 300px; transition: 0.4s ease; z-index: 100; overflow-y: auto; }
+        .sidebar { left: 0; transform: translateX(-100%); border-right: 1px solid #3b82f633; }
+        .right-panel { right: 0; transform: translateX(100%); border-left: 1px solid #3b82f633; }
         .sidebar.active, .right-panel.active { transform: translateX(0); }
 
-        .m-card { background: white; border-radius: 24px; border: 1px solid #e0f2fe; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.05); }
-        .m-input { width: 100%; padding: 14px; border-radius: 14px; border: 2px solid #e0f2fe; outline: none; margin-bottom: 12px; font-weight: 600; font-size: 14px; }
-        .m-input:focus { border-color: var(--blue-soft); }
+        .m-card { background: var(--card); border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .m-input { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #3b82f622; background: var(--card); color: var(--text); outline: none; }
+        
+        .mode-tab { padding: 8px 12px; border-radius: 10px; font-size: 10px; font-weight: 800; background: #3b82f611; color: #3b82f6; white-space: nowrap; }
+        .mode-tab.active { background: #2563eb; color: white; }
 
-        .btn-main { background: var(--blue-royal); color: white; padding: 14px; border-radius: 14px; font-weight: 700; width: 100%; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.98); }
-
-        .mode-tab { padding: 8px 16px; border-radius: 10px; font-size: 11px; font-weight: 800; background: #e0f2fe; color: var(--blue-royal); margin-right: 5px; }
-        .mode-tab.active { background: var(--blue-royal); color: white; }
-
-        /* Match Styles */
-        .match-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 10px; }
-        .match-item { padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; cursor: pointer; text-align: center; font-weight: 700; font-size: 14px; }
-        .match-item.selected { border-color: var(--blue-royal); background: #eff6ff; }
+        .letter-btn { padding: 10px 15px; background: #3b82f622; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .letter-btn.used { opacity: 0.3; pointer-events: none; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="p-4">
 
     <div id="sidebar" class="sidebar p-6">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="font-800 text-blue-900">SOZLAMALAR</h2>
-            <button onclick="toggleSidebar()" class="text-2xl text-gray-300">&times;</button>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-800 text-blue-500">LOYIHA HAQIDA</h2>
+            <button onclick="toggleSidebar()" class="text-2xl">&times;</button>
         </div>
-        <div class="space-y-6 text-sm">
-            <div class="bg-blue-50 p-4 rounded-2xl">
-                <p class="text-[10px] font-bold text-blue-400 mb-1 uppercase">Muallif</p>
-                <p class="font-800">Dilorom Yusupova</p>
-                <p class="text-[10px] text-gray-500">diloromyusupova94@gmail.com</p>
+        <div class="space-y-4 text-xs leading-relaxed">
+            <p><strong>"Mening Lug'atim"</strong> — bu zamonaviy arab tili filologiyasi va raqamli metodika uyg'unligida yaratilgan intellektual platformadir.</p>
+            
+            <div class="bg-blue-500/10 p-3 rounded-xl">
+                <p class="font-bold mb-2 text-blue-500 underline">FOYDALANISH QOIDALARI:</p>
+                <ul class="list-disc pl-4 space-y-2">
+                    <li>Mavzu bo'yicha so'zlar kiriting (assotsiativ bog'lanish uchun).</li>
+                    <li>Anagram rejimi orqali so'z tarkibini harfma-harf yodlang.</li>
+                    <li>Xato qilingan so'zlarni tizim avtomatik takrorlatadi.</li>
+                    <li>Haftalik imtihonda hamma mavzuni qamrab oling.</li>
+                </ul>
             </div>
-            <div>
-                <p class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Arabcha shrift hajmi</p>
-                <input type="range" min="20" max="70" value="40" oninput="changeFontSize(this.value)" class="w-full accent-blue-600">
+
+            <p>Ushbu ilova filologiya talabalari va mustaqil o'rganuvchilar uchun lug'at boyligini tizimli oshirishga xizmat qiladi.</p>
+            
+            <div class="pt-6 border-t border-blue-500/20">
+                <p class="font-800 text-blue-500">Loyiha muallifi:</p>
+                <p class="text-sm font-bold">Yusupova Dilorom</p>
+                <p class="text-blue-400">diloromyusupova94@gmail.com</p>
             </div>
-            <button onclick="setTheme('dark')" class="w-full text-left p-3 font-bold border rounded-xl">🌙 Tun rejimi</button>
-            <button onclick="setTheme('light')" class="w-full text-left p-3 font-bold border rounded-xl bg-blue-50">☀️ Kun rejimi</button>
         </div>
     </div>
 
-    <div id="right-panel" class="right-panel p-6 overflow-y-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="font-800 text-blue-900 uppercase text-xs">Mavzular</h2>
-            <button onclick="toggleRightPanel()" class="text-2xl text-gray-300">&times;</button>
+    <div id="right-panel" class="right-panel p-6">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h2 class="font-800 text-sm uppercase">Mavzular</h2>
+            <button onclick="toggleRightPanel()" class="text-2xl">&times;</button>
         </div>
-        <div id="topic-list" class="space-y-2">
-            </div>
-        <div class="mt-8 pt-6 border-t">
-            <button onclick="setTopic('Haftalik Imtihon')" class="w-full p-4 bg-emerald-600 text-white font-bold rounded-2xl text-xs uppercase shadow-lg shadow-emerald-100">🏆 Haftalik Imtihon</button>
-        </div>
+        <div id="topic-list" class="space-y-2"></div>
+        <button onclick="setTopic('Haftalik Imtihon')" class="mt-8 w-full p-4 bg-emerald-600 text-white font-bold rounded-2xl text-[10px] uppercase">🏆 Haftalik Imtihon</button>
     </div>
 
     <div class="max-w-md mx-auto">
         <header class="flex justify-between items-center py-4 mb-4">
-            <button onclick="toggleSidebar()" class="w-12 h-12 bg-white rounded-2xl border border-blue-50 flex items-center justify-center shadow-sm">⚙️</button>
+            <button onclick="toggleSidebar()" class="w-10 h-10 m-card flex items-center justify-center">ℹ️</button>
             <div class="text-center">
-                <p id="current-topic-label" class="text-[10px] font-800 text-blue-400 uppercase tracking-widest">Mavzu</p>
-                <h1 id="active-topic-name" class="text-lg font-800 text-blue-900 leading-tight">Umumiy</h1>
+                <h1 id="active-topic-name" class="text-lg font-800 text-blue-500 uppercase">Umumiy</h1>
             </div>
-            <button onclick="toggleRightPanel()" class="w-12 h-12 bg-white rounded-2xl border border-blue-50 flex items-center justify-center shadow-sm">📚</button>
+            <div class="flex gap-2">
+                <button onclick="toggleDarkMode()" class="w-10 h-10 m-card flex items-center justify-center">🌙</button>
+                <button onclick="toggleRightPanel()" class="w-10 h-10 m-card flex items-center justify-center">📚</button>
+            </div>
         </header>
 
         <div class="m-card p-5 mb-6">
-            <input id="topic-input" type="text" placeholder="Mavzu (masalan: Oila)" class="m-input">
-            <div class="flex gap-2">
+            <input id="topic-input" type="text" placeholder="Mavzu nomi" class="m-input mb-2 text-xs">
+            <div class="flex gap-2 mb-2">
                 <input id="ar-word" type="text" placeholder="Arabcha" class="m-input arabic-font text-2xl text-center">
-                <input id="uz-word" type="text" placeholder="O'zbekcha" class="m-input text-center">
+                <input id="uz-word" type="text" placeholder="O'zbekcha" class="m-input text-center text-sm">
             </div>
-            <button onclick="addWord()" class="btn-main">SAQLASH</button>
+            <button onclick="addWord()" class="w-full p-3 bg-blue-600 text-white font-bold rounded-xl text-sm">SAQLASH</button>
         </div>
 
         <div class="flex gap-1 overflow-x-auto no-scrollbar mb-4">
@@ -113,13 +95,12 @@
             <button onclick="setMode('tf')" class="mode-tab" id="m-tf">T/N</button>
             <button onclick="setMode('write')" class="mode-tab" id="m-write">YOZISH</button>
             <button onclick="setMode('match')" class="mode-tab" id="m-match">JUFTLASH</button>
+            <button onclick="setMode('anagram')" class="mode-tab" id="m-anagram">ANAGRAM</button>
         </div>
 
-        <div class="m-card p-6 min-h-[340px] flex flex-col justify-center">
-            <div id="game-zone">
-                <p class="text-gray-400 text-sm text-center">Mavzu tanlang yoki so'z qo'shing</p>
-            </div>
-            <div id="feedback" class="mt-6 text-center font-bold h-6"></div>
+        <div class="m-card p-6 min-h-[350px] flex flex-col justify-center relative">
+            <div id="game-zone"></div>
+            <div id="feedback" class="mt-6 text-center font-bold text-lg h-6"></div>
         </div>
     </div>
 
