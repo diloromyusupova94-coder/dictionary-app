@@ -3,107 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mening Lug'atim | Pro</title>
+    <title>Mening Lug'atim | Offlayn Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f0f9ff; --text: #1e3a8a; --card: #ffffff; }
-        .dark-mode { --bg: #0f172a; --text: #f8fafc; --card: #1e293b; }
-        
+        :root { --bg: #f8fafc; --text: #1e3a8a; --card: #ffffff; --primary: #2563eb; }
+        .dark-mode { --bg: #0f172a; --text: #f8fafc; --card: #1e293b; --primary: #3b82f6; }
         body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .arabic-font { font-family: 'IBM Plex Sans Arabic', sans-serif; direction: rtl; }
-        
-        .sidebar, .right-panel { background: var(--card); position: fixed; top: 0; height: 100%; width: 300px; transition: 0.4s ease; z-index: 100; overflow-y: auto; }
+        .sidebar, .right-panel { background: var(--card); position: fixed; top: 0; height: 100%; width: 300px; transition: 0.4s ease; z-index: 1000; overflow-y: auto; }
         .sidebar { left: 0; transform: translateX(-100%); border-right: 1px solid #3b82f633; }
         .right-panel { right: 0; transform: translateX(100%); border-left: 1px solid #3b82f633; }
         .sidebar.active, .right-panel.active { transform: translateX(0); }
-
-        .m-card { background: var(--card); border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .m-input { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #3b82f622; background: var(--card); color: var(--text); outline: none; }
-        
-        .mode-tab { padding: 8px 12px; border-radius: 10px; font-size: 10px; font-weight: 800; background: #3b82f611; color: #3b82f6; white-space: nowrap; }
-        .mode-tab.active { background: #2563eb; color: white; }
-
-        .letter-btn { padding: 10px 15px; background: #3b82f622; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .letter-btn.used { opacity: 0.3; pointer-events: none; }
-        
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .m-card { background: var(--card); border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .m-input { width: 100%; padding: 14px; border-radius: 14px; border: 2px solid #3b82f622; background: var(--card); color: var(--text); outline: none; }
+        .mode-tab { padding: 10px 16px; border-radius: 12px; font-size: 11px; font-weight: 800; background: #3b82f611; color: var(--primary); white-space: nowrap; }
+        .mode-tab.active { background: var(--primary); color: white; }
     </style>
 </head>
 <body class="p-4">
 
-    <div id="sidebar" class="sidebar p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="font-800 text-blue-500">LOYIHA HAQIDA</h2>
-            <button onclick="toggleSidebar()" class="text-2xl">&times;</button>
+    <div id="sidebar" class="sidebar p-8">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="font-800 text-blue-500 uppercase tracking-widest text-sm">Qo'llanma</h2>
+            <button onclick="toggleSidebar()" class="text-3xl">&times;</button>
         </div>
-        <div class="space-y-4 text-xs leading-relaxed">
-            <p><strong>"Mening Lug'atim"</strong> — bu zamonaviy arab tili filologiyasi va raqamli metodika uyg'unligida yaratilgan intellektual platformadir.</p>
+        <div class="space-y-6 text-xs leading-relaxed">
+            <section>
+                <h3 class="font-800 text-blue-600 mb-2 uppercase">Ilovadan foydalanish:</h3>
+                <ol class="list-decimal pl-4 space-y-2">
+                    <li><strong>Mavzu yarating:</strong> "Mavzu nomi" qismiga darslik nomini yozing.</li>
+                    <li><strong>Lug'at boyiting:</strong> Arabcha so'z va tarjimasini yozib, saqlang.</li>
+                    <li><strong>Mashq tanlang:</strong> 5 xil metoddan birini tanlab bilimingizni tekshiring.</li>
+                    <li><strong>Offlayn foydalaning:</strong> Ilovani bir marta ochganingizdan so'ng, internetisiz ham ishlayveradi.</li>
+                </ol>
+            </section>
             
-            <div class="bg-blue-500/10 p-3 rounded-xl">
-                <p class="font-bold mb-2 text-blue-500 underline">FOYDALANISH QOIDALARI:</p>
-                <ul class="list-disc pl-4 space-y-2">
-                    <li>Mavzu bo'yicha so'zlar kiriting (assotsiativ bog'lanish uchun).</li>
-                    <li>Anagram rejimi orqali so'z tarkibini harfma-harf yodlang.</li>
-                    <li>Xato qilingan so'zlarni tizim avtomatik takrorlatadi.</li>
-                    <li>Haftalik imtihonda hamma mavzuni qamrab oling.</li>
+            <section class="bg-blue-500/10 p-4 rounded-2xl border border-blue-500/10">
+                <h3 class="font-bold mb-3 text-blue-500 uppercase">Metodik Qoidalar:</h3>
+                <ul class="space-y-3">
+                    <li>🔹 <strong>Darsiy Ta'lim:</strong> Tayyor lug'at emas, faqat darsda o'tilgan so'zlarni kiriting.</li>
+                    <li>🔹 <strong>Aqlli Takrorlash:</strong> Ko'p xato qilingan so'zlar tizim tomonidan tez-tez so'raladi.</li>
+                    <li>🔹 <strong>Haftalik Imtihon:</strong> Har 7 kunda barcha mavzularni aralashtirib imtihon topshiring.</li>
                 </ul>
-            </div>
+            </section>
 
-            <p>Ushbu ilova filologiya talabalari va mustaqil o'rganuvchilar uchun lug'at boyligini tizimli oshirishga xizmat qiladi.</p>
-            
-            <div class="pt-6 border-t border-blue-500/20">
-                <p class="font-800 text-blue-500">Loyiha muallifi:</p>
-                <p class="text-sm font-bold">Yusupova Dilorom</p>
-                <p class="text-blue-400">diloromyusupova94@gmail.com</p>
+            <div class="pt-8 border-t border-blue-500/20">
+                <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Loyiha muallifi:</p>
+                <p class="text-sm font-800">Yusupova Dilorom</p>
+                <p class="text-blue-500">diloromyusupova94@gmail.com</p>
             </div>
         </div>
     </div>
 
-    <div id="right-panel" class="right-panel p-6">
-        <div class="flex justify-between items-center mb-6 border-b pb-4">
-            <h2 class="font-800 text-sm uppercase">Mavzular</h2>
-            <button onclick="toggleRightPanel()" class="text-2xl">&times;</button>
-        </div>
-        <div id="topic-list" class="space-y-2"></div>
-        <button onclick="setTopic('Haftalik Imtihon')" class="mt-8 w-full p-4 bg-emerald-600 text-white font-bold rounded-2xl text-[10px] uppercase">🏆 Haftalik Imtihon</button>
-    </div>
-
-    <div class="max-w-md mx-auto">
-        <header class="flex justify-between items-center py-4 mb-4">
-            <button onclick="toggleSidebar()" class="w-10 h-10 m-card flex items-center justify-center">ℹ️</button>
+    <div id="main-content" class="max-w-md mx-auto">
+        <header class="flex justify-between items-center py-6 mb-2">
+            <button onclick="toggleSidebar()" class="w-12 h-12 m-card flex items-center justify-center text-xl">ℹ️</button>
             <div class="text-center">
-                <h1 id="active-topic-name" class="text-lg font-800 text-blue-500 uppercase">Umumiy</h1>
+                <p class="text-[10px] font-800 text-blue-400 uppercase mb-1">Mavzu</p>
+                <h1 id="active-topic-name" class="text-xl font-800 text-blue-600 uppercase tracking-tighter">Umumiy</h1>
             </div>
-            <div class="flex gap-2">
-                <button onclick="toggleDarkMode()" class="w-10 h-10 m-card flex items-center justify-center">🌙</button>
-                <button onclick="toggleRightPanel()" class="w-10 h-10 m-card flex items-center justify-center">📚</button>
+            <div class="flex gap-3">
+                <button onclick="toggleDarkMode()" class="w-12 h-12 m-card flex items-center justify-center text-xl">🌙</button>
+                <button onclick="toggleRightPanel()" class="w-12 h-12 m-card flex items-center justify-center text-xl">📚</button>
             </div>
         </header>
 
-        <div class="m-card p-5 mb-6">
-            <input id="topic-input" type="text" placeholder="Mavzu nomi" class="m-input mb-2 text-xs">
-            <div class="flex gap-2 mb-2">
-                <input id="ar-word" type="text" placeholder="Arabcha" class="m-input arabic-font text-2xl text-center">
-                <input id="uz-word" type="text" placeholder="O'zbekcha" class="m-input text-center text-sm">
+        <div class="m-card p-6 mb-8">
+            <input id="topic-input" type="text" placeholder="Mavzu (masalan: Al-Kashshof)" class="m-input mb-3 text-xs">
+            <div class="flex gap-3 mb-4">
+                <input id="ar-word" type="text" placeholder="Arabcha" class="m-input arabic-font text-3xl text-center">
+                <input id="uz-word" type="text" placeholder="Tarjimasi" class="m-input text-center text-sm font-bold">
             </div>
-            <button onclick="addWord()" class="w-full p-3 bg-blue-600 text-white font-bold rounded-xl text-sm">SAQLASH</button>
+            <button onclick="addWord()" class="w-full p-4 bg-blue-600 text-white font-800 rounded-2xl shadow-lg shadow-blue-600/20">SAQLASH</button>
         </div>
 
-        <div class="flex gap-1 overflow-x-auto no-scrollbar mb-4">
-            <button onclick="setMode('test')" class="mode-tab active" id="m-test">TEST</button>
-            <button onclick="setMode('tf')" class="mode-tab" id="m-tf">T/N</button>
-            <button onclick="setMode('write')" class="mode-tab" id="m-write">YOZISH</button>
-            <button onclick="setMode('match')" class="mode-tab" id="m-match">JUFTLASH</button>
-            <button onclick="setMode('anagram')" class="mode-tab" id="m-anagram">ANAGRAM</button>
-        </div>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6 pb-2" id="mode-tabs">
+            </div>
 
-        <div class="m-card p-6 min-h-[350px] flex flex-col justify-center relative">
+        <div class="m-card p-8 min-h-[400px] flex flex-col justify-center relative">
             <div id="game-zone"></div>
-            <div id="feedback" class="mt-6 text-center font-bold text-lg h-6"></div>
+            <div id="feedback" class="mt-8 text-center font-800 text-lg h-8"></div>
         </div>
     </div>
 
+    <script>
+        // OFFLAYN ISHLASH UCHUN SERVICE WORKER REGISTRATSIYASI
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('Offlayn rejim faollashdi!');
+                }).catch(err => console.log('SW xatosi:', err));
+            });
+        }
+    </script>
     <script src="app.js"></script>
 </body>
 </html>
