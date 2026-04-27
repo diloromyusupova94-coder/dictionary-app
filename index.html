@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz" dir="ltr">
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,53 +7,97 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; transition: 0.3s; }
+        body { font-family: 'Inter', sans-serif; transition: 0.3s; overflow-x: hidden; }
         .arabic-text { font-family: 'Amiri', serif; direction: rtl; }
         
         /* Rejimlar */
-        body.light-mode { background: #f8fafc; color: #1e293b; }
-        body.dark-mode { background: #0f172a; color: #f1f5f9; }
-        body.dark-mode .card { background: #1e293b; border-color: #334155; }
-        body.book-mode { background: #f4ecd8; color: #5b4636; }
-        body.book-mode .card { background: #fdfaf1; border-color: #e2d1b3; }
+        .light-mode { background: #f1f5f9; color: #1e293b; }
+        .dark-mode { background: #0f172a; color: #f1f5f9; }
+        .book-mode { background: #f4ecd8; color: #5b4636; }
 
-        .card { backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .dark-mode .card, .dark-mode .sidebar { background: #1e293b; border-color: #334155; }
+        .book-mode .card, .book-mode .sidebar { background: #fdfaf1; border-color: #e2d1b3; }
+
+        .sidebar { transition: transform 0.3s ease; transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
+        .overlay { display: none; background: rgba(0,0,0,0.5); }
+        .overlay.active { display: block; }
     </style>
 </head>
-<body class="light-mode min-h-screen pb-10">
+<body class="light-mode min-h-screen">
 
-    <div class="flex justify-center gap-4 p-4 sticky top-0 z-50 bg-inherit">
-        <button onclick="setTheme('light')" class="px-4 py-1 rounded-full border shadow-sm bg-white text-sm text-black">Kun</button>
-        <button onclick="setTheme('dark')" class="px-4 py-1 rounded-full border shadow-sm bg-gray-800 text-white text-sm">Tun</button>
-        <button onclick="setTheme('book')" class="px-4 py-1 rounded-full border shadow-sm bg-[#e2d1b3] text-amber-900 text-sm">Kitob</button>
+    <div id="overlay" class="overlay fixed inset-0 z-40" onclick="toggleSidebar()"></div>
+
+    <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-80 z-50 p-6 shadow-2xl bg-white overflow-y-auto border-r">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-xl font-bold">Sozlamalar</h2>
+            <button onclick="toggleSidebar()" class="text-2xl">&times;</button>
+        </div>
+
+        <div class="mb-8">
+            <p class="text-sm font-semibold mb-3 opacity-70 uppercase tracking-wider">Mavzu</p>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="setTheme('light')" class="p-2 border rounded-xl text-xs bg-white text-black">Kun</button>
+                <button onclick="setTheme('dark')" class="p-2 border rounded-xl text-xs bg-gray-800 text-white">Tun</button>
+                <button onclick="setTheme('book')" class="p-2 border rounded-xl text-xs bg-[#e2d1b3] text-amber-900">Kitob</button>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <p class="text-sm font-semibold mb-3 opacity-70 uppercase tracking-wider">Shrift o'lchami</p>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs">Arabcha: <span id="ar-size-val">32</span>px</label>
+                    <input type="range" min="20" max="60" value="32" oninput="updateFontSize('ar', this.value)" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div>
+                    <label class="text-xs">O'zbekcha: <span id="uz-size-val">16</span>px</label>
+                    <input type="range" min="12" max="30" value="16" oninput="updateFontSize('uz', this.value)" class="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-8 p-4 bg-blue-50 rounded-2xl dark:bg-slate-800">
+            <h3 class="font-bold mb-2">Loyiha haqida</h3>
+            <p class="text-xs leading-relaxed opacity-80">
+                Ushbu ilova arab tili lug'atini samarali yodlash uchun maxsus ishlab chiqilgan. 
+                <br><br>
+                <b>Qoidalar:</b>
+                1. Yangi so'zlarni o'zingiz kiriting.
+                2. Testlarda xato qilingan so'zlar avtomatik "takrorlash" navbatiga tushadi.
+                3. Har 7 kunda barcha yodlangan so'zlardan umumiy imtihon topshiriladi.
+            </p>
+        </div>
+
+        <div class="p-4 border-t">
+            <h3 class="font-bold mb-1">Loyiha muallifi:</h3>
+            <p class="text-sm text-blue-600 font-semibold">Dilorom Yusupova</p>
+            <p class="text-xs opacity-60">lingvist-tadqiqotchi-dasturchi</p>
+            <a href="mailto:diloromyusupova94@gmail.com" class="text-[10px] text-gray-500 underline">diloromyusupova94@gmail.com</a>
+        </div>
     </div>
 
-    <div class="max-w-md mx-auto px-4">
-        <div class="card p-6 rounded-3xl shadow-xl mb-6 bg-white">
-            <h1 class="text-2xl font-bold text-center mb-2">Arab tili lug'ati</h1>
-            <div class="flex justify-around text-center text-sm font-semibold">
-                <div><p class="text-blue-500" id="total-count">0</p><span>So'zlar</span></div>
-                <div><p class="text-orange-500" id="exam-timer">--:--</p><span>Imtihongacha</span></div>
-                <div><p class="text-red-500" id="error-rate">0</p><span>Xatolar</span></div>
-            </div>
-            <button onclick="startWeeklyExam()" id="exam-btn" class="w-full mt-4 bg-orange-500 text-white py-3 rounded-2xl font-bold hidden shadow-lg animate-bounce">
-                HAFTALIK IMTIHON! ✍️
+    <div class="max-w-md mx-auto p-4">
+        <div class="flex justify-between items-center mb-6">
+            <button onclick="toggleSidebar()" class="p-3 bg-white shadow-md rounded-2xl dark:bg-slate-800">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
             </button>
+            <h1 class="text-xl font-bold">Mening Lug'atim</h1>
+            <div class="w-10"></div>
         </div>
 
-        <div class="card p-6 rounded-3xl shadow-md mb-6 bg-white">
-            <input id="word-ar" type="text" placeholder="Arabcha so'z (كتاب)" class="arabic-text w-full p-4 border rounded-2xl mb-3 text-2xl focus:ring-2 focus:ring-blue-400 outline-none text-black">
-            <input id="word-uz" type="text" placeholder="O'zbekcha tarjimasi" class="w-full p-3 border rounded-xl mb-3 outline-none text-black">
-            <button onclick="saveWord()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold hover:bg-blue-700 transition">Ro'yxatga qo'shish</button>
+        <div class="card p-6 rounded-3xl shadow-xl bg-white mb-6">
+            <input id="word-ar" type="text" placeholder="Arabcha so'z..." class="arabic-text w-full p-4 border-b text-3xl focus:outline-none text-center bg-transparent">
+            <input id="word-uz" type="text" placeholder="Tarjimasi..." class="w-full p-3 text-center focus:outline-none bg-transparent">
+            <button onclick="saveWord()" class="w-full mt-4 bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200">Qo'shish</button>
         </div>
 
-        <div id="game-container" class="card p-6 rounded-3xl shadow-lg bg-white">
-            <div id="question-card" class="text-center mb-6 py-10 bg-slate-50 rounded-2xl border-2 border-dashed">
-                <p id="q-text" class="arabic-text text-4xl mb-2">So'z kiriting</p>
-                <p id="q-type" class="text-xs uppercase tracking-widest text-gray-400">Mashq</p>
+        <div class="card p-6 rounded-3xl shadow-xl bg-white">
+            <div class="text-center py-10 mb-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl">
+                <p id="q-text" class="arabic-text leading-tight px-2" style="font-size: 32px;">Kutmoqdaman...</p>
             </div>
-            <div id="options" class="grid grid-cols-1 gap-3"></div>
-            <p id="feedback" class="mt-4 text-center h-6 font-bold"></p>
+            <div id="options" class="space-y-3"></div>
+            <p id="feedback" class="mt-4 text-center font-bold h-6"></p>
         </div>
     </div>
 
