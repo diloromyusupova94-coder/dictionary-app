@@ -1,19 +1,20 @@
-let words = JSON.parse(localStorage.getItem('vocab_pro_v7')) || [];
+let words = JSON.parse(localStorage.getItem('vocab_v8')) || [];
 let currentTopic = 'Umumiy';
 let currentMode = 'test';
 let selectedMatch = null;
+let anagramAttempt = "";
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-function toggleRightPanel() { 
-    renderTopics();
-    document.getElementById('right-panel').classList.toggle('active'); 
+function toggleRightPanel() { renderTopics(); document.getElementById('right-panel').classList.toggle('active'); }
+
+// TUN REJIMI TUZATILDI
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('dark_pref', isDark);
 }
 
-function changeFontSize(val) {
-    const el = document.getElementById('q-text');
-    if(el) el.style.fontSize = val + 'px';
-}
-
+// SO'Z QO'SHISH
 function addWord() {
     const topic = document.getElementById('topic-input').value.trim() || 'Umumiy';
     const ar = document.getElementById('ar-word').value.trim();
@@ -21,32 +22,11 @@ function addWord() {
 
     if(ar && uz) {
         words.push({ ar, uz, topic, mistakes: 0 });
-        localStorage.setItem('vocab_pro_v7', JSON.stringify(words));
+        localStorage.setItem('vocab_v8', JSON.stringify(words));
         document.getElementById('ar-word').value = '';
         document.getElementById('uz-word').value = '';
-        renderTopics();
-        alert("So'z qo'shildi!");
         generateTask();
     }
-}
-
-function renderTopics() {
-    const list = document.getElementById('topic-list');
-    list.innerHTML = '';
-    const topics = [...new Set(words.map(w => w.topic))];
-    
-    topics.forEach(t => {
-        const div = document.createElement('div');
-        div.className = "p-3 bg-blue-50/50 border border-blue-100 rounded-xl flex justify-between items-center cursor-pointer hover:bg-blue-100";
-        div.innerHTML = `<span class="font-bold text-xs">${t}</span> <span class="text-[10px] text-blue-400">${words.filter(w => w.topic === t).length} ta</span>`;
-        div.onclick = () => {
-            currentTopic = t;
-            document.getElementById('active-topic-name').innerText = t;
-            toggleRightPanel();
-            generateTask();
-        };
-        list.appendChild(div);
-    });
 }
 
 function setMode(m) {
@@ -56,91 +36,96 @@ function setMode(m) {
     generateTask();
 }
 
-function setTopic(t) {
-    currentTopic = t;
-    document.getElementById('active-topic-name').innerText = t;
-    toggleRightPanel();
-    generateTask();
-}
-
 function generateTask() {
     const zone = document.getElementById('game-zone');
-    zone.innerHTML = '';
-    document.getElementById('feedback').innerText = '';
+    const fb = document.getElementById('feedback');
+    zone.innerHTML = ''; fb.innerText = '';
 
     let pool = (currentTopic === 'Haftalik Imtihon') ? words : words.filter(w => w.topic === currentTopic);
     if(pool.length < 2) {
-        zone.innerHTML = `<p class="text-gray-400 text-sm text-center">Bu mavzuda mashq qilish uchun kamida 2 ta so'z bo'lishi kerak.</p>`;
+        zone.innerHTML = `<p class="text-gray-400 text-center text-sm">Kamida 2 ta so'z kerak.</p>`;
         return;
     }
 
     const q = pool[Math.floor(Math.random() * pool.length)];
 
     if(currentMode === 'test') {
-        zone.innerHTML = `<p id="q-text" class="arabic-font text-4xl mb-8 text-center font-bold">${q.ar}</p><div id="opts" class="grid gap-3"></div>`;
-        let opts = shuffle([q.uz, ...getWrong(q.uz)]);
-        opts.forEach(o => {
+        zone.innerHTML = `<p class="arabic-font text-5xl mb-8 text-center">${q.ar}</p><div id="opts" class="grid gap-3"></div>`;
+        [q.uz, ...getWrong(q.uz)].sort(() => 0.5-Math.random()).forEach(o => {
             const b = document.createElement('button');
             b.innerText = o;
-            b.className = "p-4 bg-white border-2 border-blue-50 rounded-2xl font-bold text-sm shadow-sm";
+            b.className = "p-4 border-2 border-blue-500/20 rounded-2xl font-bold text-sm hover:bg-blue-500 hover:text-white";
             b.onclick = () => check(o === q.uz);
             document.getElementById('opts').appendChild(b);
         });
-    } else if(currentMode === 'tf') {
-        const isTrue = Math.random() > 0.5;
-        const fake = words.find(w => w.uz !== q.uz).uz;
+    } 
+    else if(currentMode === 'anagram') {
+        anagramAttempt = "";
+        let letters = q.ar.split('').filter(l => l !== ' ');
+        let shuffled = [...letters].sort(() => 0.5-Math.random());
         zone.innerHTML = `
-            <p id="q-text" class="arabic-font text-4xl mb-2 text-center font-bold">${q.ar}</p>
-            <p class="text-blue-300 font-bold mb-8 text-center">== ${isTrue ? q.uz : fake}?</p>
-            <div class="flex gap-3">
-                <button onclick="check(${isTrue})" class="w-full p-4 bg-emerald-500 text-white font-bold rounded-2xl">TO'G'RI</button>
-                <button onclick="check(${!isTrue})" class="w-full p-4 bg-red-500 text-white font-bold rounded-2xl">NOTO'G'RI</button>
-            </div>`;
-    } else if(currentMode === 'write') {
-        zone.innerHTML = `
-            <p class="text-xl font-bold mb-6 text-center">${q.uz}</p>
-            <input id="w-ans" type="text" class="m-input arabic-font text-3xl text-center mb-4">
-            <button onclick="check(document.getElementById('w-ans').value.trim() === '${q.ar}')" class="btn-main">TEKSHIRISH</button>
+            <p class="text-sm text-gray-400 mb-2 uppercase text-center">${q.uz}</p>
+            <div id="anagram-res" class="arabic-font text-4xl mb-8 text-center h-12 border-b-2 border-blue-500/20"></div>
+            <div class="flex flex-wrap justify-center gap-2">
+                ${shuffled.map(l => `<button class="letter-btn arabic-font text-xl" onclick="typeLetter(this, '${l}', '${q.ar}')">${l}</button>`).join('')}
+            </div>
+            <button onclick="generateTask()" class="mt-6 text-[10px] text-blue-400 uppercase">Tozalash</button>
         `;
-    } else if(currentMode === 'match') {
+    }
+    // ... (boshqa rejimlarni qisqacha qo'shish)
+    else if(currentMode === 'write') {
+        zone.innerHTML = `<p class="text-xl font-bold mb-6 text-center">${q.uz}</p><input id="w-in" class="m-input arabic-font text-3xl text-center"><button onclick="check(document.getElementById('w-in').value.trim()==='${q.ar}')" class="w-full mt-4 p-3 bg-blue-600 text-white rounded-xl">TEKSHIRISH</button>`;
+    }
+    else if(currentMode === 'tf') {
+        const isT = Math.random() > 0.5;
+        const disp = isT ? q.uz : words.find(w => w.uz !== q.uz).uz;
+        zone.innerHTML = `<p class="arabic-font text-5xl mb-2 text-center">${q.ar}</p><p class="text-center mb-8">== ${disp}?</p><div class="flex gap-2"><button onclick="check(${isT})" class="w-full p-4 bg-emerald-500 text-white rounded-xl">TO'G'RI</button><button onclick="check(${!isT})" class="w-full p-4 bg-red-500 text-white rounded-xl">NOTO'G'RI</button></div>`;
+    }
+    else if(currentMode === 'match') {
         let sub = pool.slice(-4);
-        let left = shuffle(sub.map(s => ({txt: s.ar, id: s.ar})));
-        let right = shuffle(sub.map(s => ({txt: s.uz, id: s.ar})));
-        let grid = document.createElement('div');
-        grid.className = 'match-grid';
-        left.forEach((l, i) => {
-            grid.innerHTML += `<div class="match-item arabic-font text-xl" onclick="match(this, '${l.id}')">${l.txt}</div>`;
-            grid.innerHTML += `<div class="match-item text-xs" onclick="match(this, '${right[i].id}')">${right[i].txt}</div>`;
+        let l = sub.map(s => ({t: s.ar, id: s.ar}));
+        let r = sub.map(s => ({t: s.uz, id: s.ar}));
+        zone.innerHTML = `<div class="grid grid-cols-2 gap-2" id="m-grid"></div>`;
+        [...l, ...r].sort(() => 0.5-Math.random()).forEach(x => {
+            const d = document.createElement('div');
+            d.innerText = x.t; d.className = "p-3 border rounded-xl text-center cursor-pointer text-xs font-bold";
+            d.onclick = () => {
+                if(!selectedMatch) { selectedMatch = {el:d, id:x.id}; d.classList.add('bg-blue-100'); }
+                else { if(selectedMatch.id === x.id && selectedMatch.el !== d) check(true); else check(false); selectedMatch = null; }
+            };
+            document.getElementById('m-grid').appendChild(d);
         });
-        zone.appendChild(grid);
     }
 }
 
-function match(el, id) {
-    if(!selectedMatch) {
-        selectedMatch = { el, id };
-        el.classList.add('selected');
-    } else {
-        if(selectedMatch.id === id && selectedMatch.el !== el) {
-            check(true);
-        } else {
-            check(false);
-        }
-        selectedMatch = null;
-    }
+function typeLetter(btn, char, correct) {
+    btn.classList.add('used');
+    anagramAttempt += char;
+    document.getElementById('anagram-res').innerText = anagramAttempt;
+    if(anagramAttempt.length === correct.length) check(anagramAttempt === correct);
 }
 
 function check(res) {
     const f = document.getElementById('feedback');
     f.innerText = res ? "BARAKALLA! ✨" : "XATO! ❌";
-    f.className = res ? "mt-6 text-center font-bold text-emerald-500 text-lg" : "mt-6 text-center font-bold text-red-500 text-lg";
+    f.className = `mt-6 text-center font-bold text-lg ${res ? 'text-emerald-500' : 'text-red-500'}`;
     if(res) setTimeout(generateTask, 1000);
 }
 
-function getWrong(correct) {
-    return words.filter(w => w.uz !== correct).sort(() => 0.5 - Math.random()).slice(0, 2).map(w => w.uz);
+function getWrong(c) { return words.filter(w => w.uz !== c).sort(() => 0.5-Math.random()).slice(0, 2).map(w => w.uz); }
+
+function renderTopics() {
+    const list = document.getElementById('topic-list'); list.innerHTML = '';
+    [...new Set(words.map(w => w.topic))].forEach(t => {
+        const d = document.createElement('div');
+        d.className = "p-3 bg-blue-500/5 rounded-xl flex justify-between text-xs cursor-pointer";
+        d.innerHTML = `<span>${t}</span> <span class="opacity-50">${words.filter(w => w.topic===t).length} ta</span>`;
+        d.onclick = () => { currentTopic = t; document.getElementById('active-topic-name').innerText = t; toggleRightPanel(); generateTask(); };
+        list.appendChild(d);
+    });
 }
 
-function shuffle(arr) { return arr.sort(() => 0.5 - Math.random()); }
-
-window.onload = () => { renderTopics(); generateTask(); };
+window.onload = () => {
+    if(localStorage.getItem('dark_pref') === 'true') toggleDarkMode();
+    renderTopics(); generateTask();
+};
