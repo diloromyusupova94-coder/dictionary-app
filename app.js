@@ -1,34 +1,50 @@
-let words = JSON.parse(localStorage.getItem('vocab_v4')) || [];
+let words = JSON.parse(localStorage.getItem('my_vocab_v3_premium')) || [];
 
+// Sidebar boshqaruvi
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
 }
 
+// Rejimni o'zgartirish (Smooth transition)
 function setTheme(theme) {
     document.body.className = theme + '-mode';
     localStorage.setItem('pref_theme', theme);
-    toggleSidebar();
 }
 
+// Shrift o'lchamini yangilash - QO'ShILDI ✅
+function updateFontSize(lang, size) {
+    if (lang === 'ar') {
+        document.getElementById('q-text').style.fontSize = size + 'px';
+        document.getElementById('ar-val').innerText = size + 'px';
+    } else {
+        document.getElementById('uz-size-val').innerText = size + 'px';
+    }
+}
+
+// So'zni saqlash
 function saveWord() {
     const ar = document.getElementById('word-ar').value.trim();
     const uz = document.getElementById('word-uz').value.trim();
 
     if (ar && uz) {
-        words.push({ ar, uz, mistakes: 0 });
-        localStorage.setItem('vocab_v4', JSON.stringify(words));
+        words.push({ ar, uz, mistakes: 0, score: 0 });
+        localStorage.setItem('my_vocab_v3_premium', JSON.stringify(words));
         document.getElementById('word-ar').value = '';
         document.getElementById('word-uz').value = '';
+        alert("Saqlandi!");
         generateTask();
     }
 }
 
+// Test yaratish (Premium UI elementlari bilan)
 function generateTask() {
     if (words.length < 1) {
-        document.getElementById('q-text').innerText = "Hali so'z yo'q";
+        document.getElementById('score-badge').innerText = `Jami: 0`;
         return;
     }
+    document.getElementById('score-badge').innerText = `Jami: ${words.length}`;
 
+    // Xatosi ko'p so'zlarga ustunlik berish
     const sorted = [...words].sort((a, b) => b.mistakes - a.mistakes);
     const question = Math.random() < 0.7 ? sorted[0] : words[Math.floor(Math.random() * words.length)];
 
@@ -38,33 +54,41 @@ function generateTask() {
 
     let choices = [question.uz];
     while(choices.length < 3 && words.length > 2) {
-        let r = words[Math.floor(Math.random() * words.length)].uz;
-        if(!choices.includes(r)) choices.push(r);
+        let rand = words[Math.floor(Math.random() * words.length)].uz;
+        if(!choices.includes(rand)) choices.push(rand);
     }
     choices.sort(() => Math.random() - 0.5);
 
-    choices.forEach(c => {
-        const b = document.createElement('button');
-        b.innerText = c;
-        b.className = "w-full p-5 bg-white border border-gray-100 rounded-2xl font-bold hover:border-emerald-500 hover:bg-emerald-50 transition-all text-lg shadow-sm";
-        b.onclick = () => {
-            const fb = document.getElementById('feedback');
-            if(c === question.uz) {
-                fb.innerText = "To'g'ri! ✨";
-                fb.className = "mt-6 text-center font-bold text-emerald-500";
-                setTimeout(generateTask, 800);
-            } else {
-                fb.innerText = "Xato! ❌";
-                fb.className = "mt-6 text-center font-bold text-red-500";
-                question.mistakes++;
-                localStorage.setItem('vocab_v4', JSON.stringify(words));
-            }
-        };
-        optionsDiv.appendChild(b);
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.innerText = choice;
+        btn.className = "option-btn w-full py-4 rounded-xl text-lg shadow-sm active:scale-95";
+        btn.onclick = () => checkAnswer(choice, question);
+        optionsDiv.appendChild(btn);
     });
 }
 
+function checkAnswer(selected, question) {
+    const fb = document.getElementById('feedback');
+    if (selected === question.uz) {
+        fb.innerText = "BARAKALLA! ✨";
+        fb.style.color = "#10b981";
+        question.score++;
+    } else {
+        fb.innerText = "XATO! (To'g'risi: " + question.uz + ")";
+        fb.style.color = "#ef4444";
+        question.mistakes++;
+    }
+    localStorage.setItem('my_vocab_v3_premium', JSON.stringify(words));
+    setTimeout(() => {
+        fb.innerText = "";
+        generateTask();
+    }, 1500);
+}
+
+// Dastlabki yuklash
 window.onload = () => {
-    setTheme(localStorage.getItem('pref_theme') || 'light');
+    const savedTheme = localStorage.getItem('pref_theme') || 'light';
+    setTheme(savedTheme);
     generateTask();
 };
