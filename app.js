@@ -1,54 +1,29 @@
-let words = JSON.parse(localStorage.getItem('arabic_vocab')) || [];
+let words = JSON.parse(localStorage.getItem('my_vocab_v3')) || [];
 
-// Sidebar boshqaruvi
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
-    document.getElementById('overlay').classList.toggle('hidden');
 }
 
-// Rejimni o'zgartirish (Smooth transition)
-function setTheme(theme) {
-    document.body.className = theme + '-mode min-h-screen';
-    localStorage.setItem('app_theme', theme);
-    toggleSidebar(); // Mavzu tanlangach sidebar yopiladi
+function updateFontSize(size) {
+    document.getElementById('q-text').style.fontSize = size + 'px';
 }
 
-// Shrift o'lchamini yangilash
-function updateFontSize(lang, size) {
-    if (lang === 'ar') {
-        document.getElementById('q-text').style.fontSize = size + 'px';
-        document.getElementById('ar-size-val').innerText = size + 'px';
-    } else {
-        document.getElementById('uz-size-val').innerText = size + 'px';
-    }
-    localStorage.setItem(`font_size_${lang}`, size);
-}
-
-// So'zni saqlash (SweetAlert o'rniga oddiy premium xabar)
 function saveWord() {
     const ar = document.getElementById('word-ar').value.trim();
     const uz = document.getElementById('word-uz').value.trim();
 
     if (ar && uz) {
-        words.push({ ar, uz, mistakes: 0, score: 0 });
-        localStorage.setItem('arabic_vocab', JSON.stringify(words));
+        words.push({ ar, uz, mistakes: 0 });
+        localStorage.setItem('my_vocab_v3', JSON.stringify(words));
         document.getElementById('word-ar').value = '';
         document.getElementById('word-uz').value = '';
+        alert("Saqlandi!");
         generateTask();
-        
-        // Premium ko'rinishdagi tasdiqlash
-        const fb = document.getElementById('feedback');
-        fb.innerText = "Muvaffaqiyatli saqlandi! ✨";
-        fb.style.color = "#c9a063";
-        setTimeout(() => fb.innerText = "", 1500);
     }
 }
 
-// Test yaratish (Premium UI elementlari bilan)
 function generateTask() {
-    if (words.length < 2) return;
-
-    // Xatosi ko'p so'zlarga ustunlik berish
+    if (words.length < 1) return;
     const sorted = [...words].sort((a, b) => b.mistakes - a.mistakes);
     const question = Math.random() < 0.7 ? sorted[0] : words[Math.floor(Math.random() * words.length)];
 
@@ -57,44 +32,31 @@ function generateTask() {
     optionsDiv.innerHTML = '';
 
     let choices = [question.uz];
-    while(choices.length < 3) {
-        let rand = words[Math.floor(Math.random() * words.length)].uz;
-        if(!choices.includes(rand)) choices.push(rand);
+    while(choices.length < 3 && words.length > 2) {
+        let r = words[Math.floor(Math.random() * words.length)].uz;
+        if(!choices.includes(r)) choices.push(r);
     }
     choices.sort(() => Math.random() - 0.5);
 
-    choices.forEach(choice => {
-        const btn = document.createElement('button');
-        btn.innerText = choice;
-        // Premium Option Button Dizayni
-        btn.className = "p-5 bg-white dark:bg-slate-800 border-2 border-gray-100 dark:border-gray-800 rounded-2xl font-semibold shadow-inner hover:border-primary/50 hover:bg-orange-50/50 transition active:scale-95 text-xl text-black dark:text-white poppins-font";
-        btn.style.fontSize = document.getElementById('uz-size-val').innerText;
-        btn.onclick = () => checkAnswer(choice, question);
-        optionsDiv.appendChild(btn);
+    choices.forEach(c => {
+        const b = document.createElement('button');
+        b.innerText = c;
+        b.className = "option-btn border-2 text-emerald-900";
+        b.onclick = () => {
+            const fb = document.getElementById('feedback');
+            if(c === question.uz) {
+                fb.innerText = "TO'G'RI! ✨";
+                fb.className = "mt-6 text-center font-black text-2xl text-green-600";
+                setTimeout(generateTask, 1000);
+            } else {
+                fb.innerText = "XATO! ❌";
+                fb.className = "mt-6 text-center font-black text-2xl text-red-600";
+                question.mistakes++;
+                localStorage.setItem('my_vocab_v3', JSON.stringify(words));
+            }
+        };
+        optionsDiv.appendChild(b);
     });
 }
 
-function checkAnswer(selected, question) {
-    const fb = document.getElementById('feedback');
-    if (selected === question.uz) {
-        fb.innerText = "Barakalla! ✅";
-        fb.style.color = "#10b981";
-        question.score++;
-    } else {
-        fb.innerText = "To'g'risi: " + question.uz;
-        fb.style.color = "#ef4444";
-        question.mistakes++;
-    }
-    localStorage.setItem('arabic_vocab', JSON.stringify(words));
-    setTimeout(() => {
-        fb.innerText = "";
-        generateTask();
-    }, 1200);
-}
-
-// Dastlabki yuklash
-window.onload = () => {
-    const savedTheme = localStorage.getItem('app_theme') || 'light';
-    setTheme(savedTheme);
-    generateTask();
-};
+generateTask();
